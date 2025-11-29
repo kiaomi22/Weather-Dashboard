@@ -1,4 +1,4 @@
-const API_KEY = '10cfd092f533bce4a4cba799d80cd149';
+const API_KEY = '10cfd092f533bce4a4cba799d80cd149'; 
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
 let currentCity = 'Jakarta';
@@ -9,26 +9,17 @@ let updateInterval;
 const cityInput = document.getElementById('cityInput');
 const searchBtn = document.getElementById('searchBtn');
 const refreshBtn = document.getElementById('refreshBtn');
-const themeToggle = document.getElementById('themeToggle');
 const unitToggle = document.getElementById('unitToggle');
+const themeToggle = document.getElementById('themeToggle');
 const saveCityBtn = document.getElementById('saveCityBtn');
-const loadingIndicator = document.getElementById('loading');
-const errorMessage = document.getElementById('errorMessage');
+const loading = document.getElementById('loading');
+const errorMsg = document.getElementById('errorMessage');
+const weatherContainer = document.getElementById('weatherContainer');
 
 window.addEventListener('load', () => {
-    loadPreferences();
     loadFavorites();
     fetchWeatherData(currentCity);
-    
-    startRealTimeUpdates();
-});
-
-searchBtn.addEventListener('click', () => {
-    const city = cityInput.value.trim();
-    if (city) {
-        currentCity = city;
-        fetchWeatherData(city);
-    }
+    startAutoUpdate();
 });
 
 searchBtn.addEventListener('click', () => {
@@ -43,137 +34,110 @@ cityInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') searchBtn.click();
 });
 
-refreshBtn.addEventListener('click', () => {
+refreshBtn.addEventListener('click', () => fetchWeatherData(currentCity));
+
+unitToggle.addEventListener('click', () => {
+    units = units === 'metric' ? 'imperial' : 'metric';
+    unitToggle.textContent = units === 'metric' ? '°C' : '°F';
     fetchWeatherData(currentCity);
 });
 
 themeToggle.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
-    isDarkMode = document.body.classList.contains('dark-mode');
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-    updateThemeIcon();
 });
 
-unitToggle.addEventListener('click', () => {
-    units = units === 'metric' ? 'imperial' : 'metric';
-    unitToggle.textContent = units === 'metric' ? '°C' : '°F';
-    fetchWeatherData(currentCity); 
-});
-
-saveCityBtn.addEventListener('click', saveFavoriteCity);
+saveCityBtn.addEventListener('click', saveFavorite);
 
 async function fetchWeatherData(city) {
     showLoading(true);
-    errorMessage.classList.add('hidden');
+    errorMsg.classList.add('hidden');
     
     try {
-        const currentRes = await fetch(`${BASE_URL}/weather?q=${city}&units=${units}&appid=${API_KEY}`);
-        if (!currentRes.ok) throw new Error('Kota tidak ditemukan');
-        const currentData = await currentRes.json();
+        const weatherRes = await fetch(`${BASE_URL}/weather?q=${city}&units=${units}&appid=${API_KEY}`);
+        if (!weatherRes.ok) throw new Error('Kota tidak ditemukan atau API Key belum aktif.');
+        const weatherData = await weatherRes.json();
 
         const forecastRes = await fetch(`${BASE_URL}/forecast?q=${city}&units=${units}&appid=${API_KEY}`);
         const forecastData = await forecastRes.json();
 
-        updateCurrentWeatherUI(currentData);
+        updateHeroUI(weatherData);
+        updateDetailsUI(weatherData);
         updateForecastUI(forecastData.list);
         
         saveToHistory(city);
+        showLoading(false);
 
     } catch (error) {
-        showError(error.message);
-    } finally {
         showLoading(false);
+        errorMsg.textContent = error.message;
+        errorMsg.classList.remove('hidden');
+        weatherContainer.classList.add('hidden');
     }
 }
 
-function updateCurrentWeatherUI(data) {
-    document.getElementById('currentWeather').classList.remove('hidden');
+function updateHeroUI(data) {
+    weatherContainer.classList.remove('hidden');
     
-    document.getElementById('cityName').textContent = `${data.name}, ${data.sys.country}`;
-    
-    const now = new Date();
-    document.getElementById('dateTimestamp').textContent = `Update: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-    
+    document.getElementById('cityName').textContent = data.name;
     document.getElementById('temperature').textContent = Math.round(data.main.temp);
-    document.getElementById('unitDisplay').textContent = units === 'metric' ? '°C' : '°F';
+    document.getElementById('condition').textContent = data.weather[0].description;
+    
+    document.getElementById('tempMax').textContent = Math.round(data.main.temp_max);
+    document.getElementById('tempMin').textContent = Math.round(data.main.temp_min);
+}
+
+function updateDetailsUI(data) {
     document.getElementById('humidity').textContent = data.main.humidity;
     document.getElementById('windSpeed').textContent = data.wind.speed;
     document.getElementById('speedUnit').textContent = units === 'metric' ? 'm/s' : 'mph';
-    document.getElementById('condition').textContent = data.weather[0].description;
-    
-    const iconCode = data.weather[0].icon;
-    document.getElementById('weatherIcon').src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+    document.getElementById('feelsLike').textContent = Math.round(data.main.feels_like);
+    document.getElementById('pressure').textContent = data.main.pressure;
 }
 
 function updateForecastUI(forecastList) {
     const grid = document.getElementById('forecastGrid');
     grid.innerHTML = ''; 
-    document.getElementById('forecastSection').classList.remove('hidden');
 
     const dailyData = forecastList.filter(item => item.dt_txt.includes("12:00:00"));
 
     dailyData.slice(0, 5).forEach(day => {
         const date = new Date(day.dt * 1000);
         const dayName = date.toLocaleDateString('id-ID', { weekday: 'long' });
+        const iconCode = day.weather[0].icon;
         
-        const card = document.createElement('div');
-        card.className = 'forecast-card';
-        card.innerHTML = `
-            <h4>${dayName}</h4>
-            <img src="https://openweathermap.org/img/wn/${day.weather[0].icon}.png" alt="icon">
-            <p><strong>${Math.round(day.main.temp)}°</strong></p>
-            <p class="text-small">${day.weather[0].main}</p>
+        const row = document.createElement('div');
+        row.className = 'forecast-item';
+        row.innerHTML = `
+            <div class="day-name">${dayName}</div>
+            <img src="https://openweathermap.org/img/wn/${iconCode}.png" class="forecast-icon" alt="icon">
+            <div class="forecast-temp">
+                <span>${Math.round(day.main.temp)}°</span>
+            </div>
         `;
-        grid.appendChild(card);
+        grid.appendChild(row);
     });
 }
 
-function startRealTimeUpdates() {
-    if (updateInterval) clearInterval(updateInterval);
-    
-    updateInterval = setInterval(() => {
-        console.log('Auto-updating weather data...');
-        fetchWeatherData(currentCity);
-    }, 300000); 
-}
-
-function showLoading(show) {
-    if (show) {
-        loadingIndicator.classList.remove('hidden');
-        document.getElementById('currentWeather').classList.add('hidden');
-        document.getElementById('forecastSection').classList.add('hidden');
+function showLoading(isLoading) {
+    if (isLoading) {
+        loading.classList.remove('hidden');
+        weatherContainer.classList.add('hidden');
     } else {
-        loadingIndicator.classList.add('hidden');
+        loading.classList.add('hidden');
     }
 }
 
-function showError(msg) {
-    errorMessage.textContent = msg;
-    errorMessage.classList.remove('hidden');
-}
-
-function updateThemeIcon() {
-    const icon = themeToggle.querySelector('i');
-    if (isDarkMode) {
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-    } else {
-        icon.classList.remove('fa-sun');
-        icon.classList.add('fa-moon');
-    }
-}
-
-function saveFavoriteCity() {
-    let favorites = JSON.parse(localStorage.getItem('weatherFavorites')) || [];
+function saveFavorite() {
+    let favorites = JSON.parse(localStorage.getItem('iosWeatherFav')) || [];
     if (!favorites.includes(currentCity)) {
         favorites.push(currentCity);
-        localStorage.setItem('weatherFavorites', JSON.stringify(favorites));
+        localStorage.setItem('iosWeatherFav', JSON.stringify(favorites));
         loadFavorites();
     }
 }
 
 function loadFavorites() {
-    const favorites = JSON.parse(localStorage.getItem('weatherFavorites')) || [];
+    const favorites = JSON.parse(localStorage.getItem('iosWeatherFav')) || [];
     const list = document.getElementById('favoritesList');
     const container = document.getElementById('favoritesSection');
     
@@ -182,14 +146,15 @@ function loadFavorites() {
     if (favorites.length > 0) {
         container.classList.remove('hidden');
         favorites.forEach(city => {
-            const chip = document.createElement('span');
+            const chip = document.createElement('div');
             chip.className = 'chip';
-            chip.innerHTML = `${city} <i class="fas fa-times" onclick="removeFavorite('${city}')"></i>`;
+            chip.innerHTML = `${city} <i class="fas fa-times" style="font-size:0.8em"></i>`;
             
             chip.addEventListener('click', (e) => {
-                if (e.target.tagName !== 'I') {
+                if (e.target.tagName === 'I') {
+                    removeFavorite(city);
+                } else {
                     currentCity = city;
-                    cityInput.value = city;
                     fetchWeatherData(city);
                 }
             });
@@ -200,21 +165,20 @@ function loadFavorites() {
     }
 }
 
-window.removeFavorite = function(city) {
-    let favorites = JSON.parse(localStorage.getItem('weatherFavorites')) || [];
+function removeFavorite(city) {
+    let favorites = JSON.parse(localStorage.getItem('iosWeatherFav')) || [];
     favorites = favorites.filter(c => c !== city);
-    localStorage.setItem('weatherFavorites', JSON.stringify(favorites));
+    localStorage.setItem('iosWeatherFav', JSON.stringify(favorites));
     loadFavorites();
-};
+}
 
 function saveToHistory(city) {
-    // Digunakan untuk Auto-complete suggestions [cite: 1050]
     let history = JSON.parse(localStorage.getItem('searchHistory')) || [];
     if (!history.includes(city)) {
         history.push(city);
         localStorage.setItem('searchHistory', JSON.stringify(history));
+        updateSuggestions();
     }
-    updateSuggestions();
 }
 
 function updateSuggestions() {
@@ -228,12 +192,9 @@ function updateSuggestions() {
     });
 }
 
-function loadPreferences() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        isDarkMode = true;
-    }
-    updateThemeIcon();
-    updateSuggestions();
+function startAutoUpdate() {
+    updateInterval = setInterval(() => {
+        console.log('Auto-updating...');
+        fetchWeatherData(currentCity);
+    }, 300000);
 }

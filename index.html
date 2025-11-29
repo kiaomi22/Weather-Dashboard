@@ -6,69 +6,80 @@
     <title>Weather Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-cloud-sun"></i> Weather Dashboard</h1>
-            <div class="controls">
-                <button id="themeToggle" class="btn-icon" title="Toggle Dark/Light Mode">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <button id="unitToggle" class="btn-icon" title="Toggle °C/°F">
-                    °C
-                </button>
-            </div>
-        </header>
-        <div class="search-box">
-            <div class="input-group">
-                <input type="text" id="cityInput" list="citySuggestions" placeholder="Cari nama kota...">
-                <datalist id="citySuggestions">
-                    </datalist>
-                <button id="searchBtn"><i class="fas fa-search"></i> Cari</button>
-                <button id="refreshBtn" title="Manual Update"><i class="fas fa-sync-alt"></i></button>
-            </div>
-            <button id="saveCityBtn" class="btn-secondary"><i class="far fa-star"></i> Simpan ke Favorit</button>
+    <div class="iphone-container">
+        
+        <div class="search-section glass-panel">
+            <input type="text" id="cityInput" placeholder="Cari kota..." list="citySuggestions">
+            <button id="searchBtn"><i class="fas fa-search"></i></button>
+            <button id="refreshBtn" style="margin-left: 5px;"><i class="fas fa-sync-alt"></i></button>
+            <datalist id="citySuggestions"></datalist>
         </div>
 
-        <div id="favoritesSection" class="favorites-container hidden">
-            <h3>Kota Favorit:</h3>
+        <div id="loading" class="hidden loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+
+        <div id="errorMessage" class="hidden error-msg"></div>
+
+        <div id="weatherContainer">
+            <div class="weather-hero">
+                <h2 id="cityName">Jakarta</h2>
+                <div class="hero-temp">
+                    <span id="temperature">--</span><span class="degree">°</span>
+                </div>
+                <p id="condition">--</p>
+                <div class="high-low">
+                    <span>H: <span id="tempMax">--</span>°</span>
+                    <span style="margin-left: 10px;">L: <span id="tempMin">--</span>°</span>
+                </div>
+            </div>
+
+            <div class="details-grid">
+                <div class="glass-widget">
+                    <div class="widget-header"><i class="fas fa-tint"></i> KELEMBAPAN</div>
+                    <div class="widget-value"><span id="humidity">--</span>%</div>
+                </div>
+                
+                <div class="glass-widget">
+                    <div class="widget-header"><i class="fas fa-wind"></i> ANGIN</div>
+                    <div class="widget-value"><span id="windSpeed">--</span> <span id="speedUnit" style="font-size: 0.5em;">m/s</span></div>
+                </div>
+
+                <div class="glass-widget">
+                    <div class="widget-header"><i class="fas fa-thermometer-half"></i> REAL FEEL</div>
+                    <div class="widget-value"><span id="feelsLike">--</span>°</div>
+                </div>
+
+                <div class="glass-widget">
+                    <div class="widget-header"><i class="fas fa-tachometer-alt"></i> TEKANAN</div>
+                    <div class="widget-value"><span id="pressure">--</span> <span style="font-size: 0.4em;">hPa</span></div>
+                </div>
+            </div>
+
+            <div class="forecast-section glass-panel">
+                <div class="widget-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
+                    <i class="far fa-calendar-alt"></i> 5-DAY FORECAST
+                </div>
+                <div id="forecastGrid" class="forecast-list">
+                    </div>
+            </div>
+        </div>
+        
+        <div class="bottom-controls">
+            <button id="unitToggle" class="circle-btn" title="Ganti Unit">°C</button>
+            <button id="themeToggle" class="circle-btn" title="Ganti Tema"><i class="fas fa-adjust"></i></button>
+            <button id="saveCityBtn" class="circle-btn" title="Simpan Favorit"><i class="far fa-star"></i></button>
+        </div>
+        
+        <div id="favoritesSection" class="hidden glass-panel" style="margin-top: 15px;">
+            <h4 style="margin: 0 0 10px 0; font-weight: 500;">Kota Favorit</h4>
             <div id="favoritesList" class="chips-container"></div>
         </div>
 
-        <div id="loading" class="loading hidden">
-            <i class="fas fa-spinner fa-spin"></i> Mengambil data cuaca...
-        </div>
-
-        <div id="errorMessage" class="error hidden"></div>
-        <div id="currentWeather" class="weather-card hidden">
-            <div class="weather-header">
-                <div>
-                    <h2 id="cityName">-</h2>
-                    <p id="dateTimestamp">Last updated: -</p>
-                </div>
-                <img id="weatherIcon" src="" alt="Weather Icon" class="weather-icon-lg">
-            </div>
-            <div class="weather-body">
-                <div class="temp-container">
-                    <span id="temperature" class="temp-big">0</span>
-                    <span id="unitDisplay" class="unit">°C</span>
-                </div>
-                <div class="weather-details">
-                    <p><i class="fas fa-tint"></i> Kelembapan: <span id="humidity">0</span>%</p>
-                    <p><i class="fas fa-wind"></i> Angin: <span id="windSpeed">0</span> <span id="speedUnit">m/s</span></p>
-                    <p><i class="fas fa-info-circle"></i> Kondisi: <span id="condition">-</span></p>
-                </div>
-            </div>
-        </div>
-        <div id="forecastSection" class="hidden">
-            <h3>5-Day Forecast</h3>
-            <div id="forecastGrid" class="forecast-grid">
-                </div>
-        </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
-
