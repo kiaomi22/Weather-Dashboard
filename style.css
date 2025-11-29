@@ -42,3 +42,32 @@ h1 {
     color: var(--primary-color);
     font-weight: 700;
 }
+
+.btn-icon {
+    background: var(--card-bg);
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 8px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: 0.3s;
+}
+
+.btn-icon:hover {
+    background: var(--primary-color);
+    color: white; 
+}
+
+body.dark-mode .btn-icon:hover {
+    color: var(--card-bg); 
+}
+
+.search-box {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 20px; 
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+    border: 1px solid rgba(171, 71, 188, 0.1);
+}
