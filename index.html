@@ -3,82 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Dashboard</title>
+    <title>Pastel Weather Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="iphone-container">
+    <div class="app-container">
         
-        <div class="search-section glass-panel">
-            <input type="text" id="cityInput" placeholder="Cari kota..." list="citySuggestions">
-            <button id="searchBtn"><i class="fas fa-search"></i></button>
-            <button id="refreshBtn" style="margin-left: 5px;"><i class="fas fa-sync-alt"></i></button>
-            <datalist id="citySuggestions"></datalist>
-        </div>
-
-        <div id="loading" class="hidden loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i>
-        </div>
-
-        <div id="errorMessage" class="hidden error-msg"></div>
-
-        <div id="weatherContainer">
-            <div class="weather-hero">
-                <h2 id="cityName">Jakarta</h2>
-                <div class="hero-temp">
-                    <span id="temperature">--</span><span class="degree">°</span>
-                </div>
-                <p id="condition">--</p>
-                <div class="high-low">
-                    <span>H: <span id="tempMax">--</span>°</span>
-                    <span style="margin-left: 10px;">L: <span id="tempMin">--</span>°</span>
-                </div>
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-cloud-moon"></i>
             </div>
-
-            <div class="details-grid">
-                <div class="glass-widget">
-                    <div class="widget-header"><i class="fas fa-tint"></i> KELEMBAPAN</div>
-                    <div class="widget-value"><span id="humidity">--</span>%</div>
-                </div>
-                
-                <div class="glass-widget">
-                    <div class="widget-header"><i class="fas fa-wind"></i> ANGIN</div>
-                    <div class="widget-value"><span id="windSpeed">--</span> <span id="speedUnit" style="font-size: 0.5em;">m/s</span></div>
-                </div>
-
-                <div class="glass-widget">
-                    <div class="widget-header"><i class="fas fa-thermometer-half"></i> REAL FEEL</div>
-                    <div class="widget-value"><span id="feelsLike">--</span>°</div>
-                </div>
-
-                <div class="glass-widget">
-                    <div class="widget-header"><i class="fas fa-tachometer-alt"></i> TEKANAN</div>
-                    <div class="widget-value"><span id="pressure">--</span> <span style="font-size: 0.4em;">hPa</span></div>
-                </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#"><i class="fas fa-th-large"></i></a></li>
+                <li><a href="#" id="themeToggle"><i class="fas fa-adjust"></i></a></li>
+                <li><a href="#" id="saveCityBtn"><i class="far fa-star"></i></a></li>
+                <li><a href="#" id="unitToggle">°C</a></li>
+            </ul>
+            <div class="logout">
+                <a href="#"><i class="fas fa-sign-out-alt"></i></a>
             </div>
+        </nav>
 
-            <div class="forecast-section glass-panel">
-                <div class="widget-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
-                    <i class="far fa-calendar-alt"></i> 5-DAY FORECAST
+        <main class="dashboard">
+            <header class="top-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="cityInput" placeholder="Search City..." list="citySuggestions">
+                    <datalist id="citySuggestions"></datalist>
                 </div>
-                <div id="forecastGrid" class="forecast-list">
+                <div class="user-profile">
+                    <span id="dateDisplay">Today</span>
+                    <div class="profile-pic">
+                        <i class="fas fa-user-circle"></i>
                     </div>
-            </div>
-        </div>
-        
-        <div class="bottom-controls">
-            <button id="unitToggle" class="circle-btn" title="Ganti Unit">°C</button>
-            <button id="themeToggle" class="circle-btn" title="Ganti Tema"><i class="fas fa-adjust"></i></button>
-            <button id="saveCityBtn" class="circle-btn" title="Simpan Favorit"><i class="far fa-star"></i></button>
-        </div>
-        
-        <div id="favoritesSection" class="hidden glass-panel" style="margin-top: 15px;">
-            <h4 style="margin: 0 0 10px 0; font-weight: 500;">Kota Favorit</h4>
-            <div id="favoritesList" class="chips-container"></div>
-        </div>
+                </div>
+            </header>
+            
+            <div id="loading" class="hidden"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+            <div id="errorMessage" class="hidden">Error message here</div>
 
+            <div class="grid-container" id="weatherContent">
+                
+                <div class="card main-weather">
+                    <div class="weather-header">
+                        <h2 id="cityName">Jakarta</h2>
+                        <span id="condition">Sunny</span>
+                    </div>
+                    <div class="weather-center">
+                        <img id="weatherIcon" src="" alt="icon">
+                        <h1 id="temperature">24°</h1>
+                    </div>
+                    <div class="weather-details">
+                        <div class="detail-item">
+                            <i class="fas fa-wind"></i>
+                            <span id="windSpeed">--</span>
+                            <small>Wind</small>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-tint"></i>
+                            <span id="humidity">--</span>
+                            <small>Hum</small>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-eye"></i>
+                            <span id="visibility">--</span>
+                            <small>Vis</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card forecast-section">
+                    <div class="card-title">
+                        <h3>Forecast 5 Hari</h3>
+                        <a href="#">See all <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="forecast-list" id="forecastGrid">
+                        </div>
+                </div>
+
+                <div class="card favorites-section">
+                    <div class="card-title"><h3>Kota Favorit</h3></div>
+                    <div class="favorites-grid" id="favoritesList">
+                        <div class="empty-state">Belum ada favorit</div>
+                    </div>
+                </div>
+
+                <div class="card overview-section">
+                    <div class="card-title">
+                        <h3>Overview</h3>
+                        <div class="tabs">
+                            <span class="active">Temperature</span>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="chartContainer">
+                        </div>
+                    <div class="chart-labels" id="chartLabels">
+                        </div>
+                </div>
+
+            </div>
+        </main>
     </div>
     <script src="script.js"></script>
 </body>
