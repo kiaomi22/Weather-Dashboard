@@ -210,3 +210,28 @@ button.btn-secondary:hover {
     color: var(--primary-color);
     margin-top: 0;
 }
+
+.chips-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+.chip {
+    background: var(--bg-color);
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 8px 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+}
+
+.chip:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+body.dark-mode .chip:hover {
+    color: #2d1b4e;
+}
