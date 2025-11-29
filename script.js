@@ -1,4 +1,4 @@
-const API_KEY = 'YOUR_OPENWEATHER_API_KEY'; 
+const API_KEY = '10cfd092f533bce4a4cba799d80cd149';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
 let currentCity = 'Jakarta';
