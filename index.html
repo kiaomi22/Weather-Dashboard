@@ -20,3 +20,44 @@
                 </button>
             </div>
         </header>
+        <div class="search-box">
+            <div class="input-group">
+                <input type="text" id="cityInput" list="citySuggestions" placeholder="Cari nama kota...">
+                <datalist id="citySuggestions">
+                    </datalist>
+                <button id="searchBtn"><i class="fas fa-search"></i> Cari</button>
+                <button id="refreshBtn" title="Manual Update"><i class="fas fa-sync-alt"></i></button>
+            </div>
+            <button id="saveCityBtn" class="btn-secondary"><i class="far fa-star"></i> Simpan ke Favorit</button>
+        </div>
+
+        <div id="favoritesSection" class="favorites-container hidden">
+            <h3>Kota Favorit:</h3>
+            <div id="favoritesList" class="chips-container"></div>
+        </div>
+
+        <div id="loading" class="loading hidden">
+            <i class="fas fa-spinner fa-spin"></i> Mengambil data cuaca...
+        </div>
+
+        <div id="errorMessage" class="error hidden"></div>
+        <div id="currentWeather" class="weather-card hidden">
+            <div class="weather-header">
+                <div>
+                    <h2 id="cityName">-</h2>
+                    <p id="dateTimestamp">Last updated: -</p>
+                </div>
+                <img id="weatherIcon" src="" alt="Weather Icon" class="weather-icon-lg">
+            </div>
+            <div class="weather-body">
+                <div class="temp-container">
+                    <span id="temperature" class="temp-big">0</span>
+                    <span id="unitDisplay" class="unit">°C</span>
+                </div>
+                <div class="weather-details">
+                    <p><i class="fas fa-tint"></i> Kelembapan: <span id="humidity">0</span>%</p>
+                    <p><i class="fas fa-wind"></i> Angin: <span id="windSpeed">0</span> <span id="speedUnit">m/s</span></p>
+                    <p><i class="fas fa-info-circle"></i> Kondisi: <span id="condition">-</span></p>
+                </div>
+            </div>
+        </div>
