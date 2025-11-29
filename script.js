@@ -61,3 +61,27 @@ unitToggle.addEventListener('click', () => {
 });
 
 saveCityBtn.addEventListener('click', saveFavoriteCity);
+
+async function fetchWeatherData(city) {
+    showLoading(true);
+    errorMessage.classList.add('hidden');
+    
+    try {
+        const currentRes = await fetch(`${BASE_URL}/weather?q=${city}&units=${units}&appid=${API_KEY}`);
+        if (!currentRes.ok) throw new Error('Kota tidak ditemukan');
+        const currentData = await currentRes.json();
+
+        const forecastRes = await fetch(`${BASE_URL}/forecast?q=${city}&units=${units}&appid=${API_KEY}`);
+        const forecastData = await forecastRes.json();
+
+        updateCurrentWeatherUI(currentData);
+        updateForecastUI(forecastData.list);
+        
+        saveToHistory(city);
+
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        showLoading(false);
+    }
+}
