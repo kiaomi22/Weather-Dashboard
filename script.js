@@ -30,3 +30,34 @@ searchBtn.addEventListener('click', () => {
         fetchWeatherData(city);
     }
 });
+
+searchBtn.addEventListener('click', () => {
+    const city = cityInput.value.trim();
+    if (city) {
+        currentCity = city;
+        fetchWeatherData(city);
+    }
+});
+
+cityInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') searchBtn.click();
+});
+
+refreshBtn.addEventListener('click', () => {
+    fetchWeatherData(currentCity);
+});
+
+themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    updateThemeIcon();
+});
+
+unitToggle.addEventListener('click', () => {
+    units = units === 'metric' ? 'imperial' : 'metric';
+    unitToggle.textContent = units === 'metric' ? '°C' : '°F';
+    fetchWeatherData(currentCity); 
+});
+
+saveCityBtn.addEventListener('click', saveFavoriteCity);
